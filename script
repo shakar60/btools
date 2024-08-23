@@ -1,4 +1,4 @@
---skidded by shakar
+--[[
 
 local tools = {
     {Name = "Hammer", BinType = 4, Description = "Click An Object To Smash It"},
@@ -83,6 +83,69 @@ local player = game.Players.LocalPlayer
 player.CharacterAdded:Connect(onCharacterAdded)
 
 -- Set up tools for the current character
+if player.Character then
+    onCharacterAdded(player.Character)
+end ]]
+
+local toolInfo = {
+    Name = "F3X",
+    Code = "loadstring(game:GetObjects('rbxassetid://6695644299')[1].Source)()", 
+    Description = "Click An Object To Get The F3X Tool"
+}
+
+local function createF3XTool(toolInfo)
+    -- Create a Tool instance for the F3X tool with custom code
+    local tool = Instance.new("Tool")
+    tool.RequiresHandle = false
+    tool.Name = toolInfo.Name
+
+    tool.Activated:Connect(function()
+        -- Execute the F3X script
+        loadstring(toolInfo.Code)()
+        -- Remove the tool after activation
+        tool:Destroy()
+    end)
+
+    -- Create and set up the description GUI
+    local handle = Instance.new("Part")
+    handle.Name = "Handle"
+    handle.Size = Vector3.new(1, 1, 1)
+    handle.Anchored = false
+    handle.CanCollide = false
+    handle.Parent = tool
+
+    local billboardGui = Instance.new("BillboardGui")
+    billboardGui.Adornee = handle
+    billboardGui.Size = UDim2.new(0, 200, 0, 50)
+    billboardGui.StudsOffset = Vector3.new(0, 3, 0)
+    billboardGui.Parent = handle
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.TextScaled = true
+    textLabel.Text = toolInfo.Description
+    textLabel.TextStrokeTransparency = 0.5
+    textLabel.Parent = billboardGui
+
+    tool.Parent = game.Players.LocalPlayer.Backpack
+end
+
+-- Function to handle character respawn
+local function onCharacterAdded(character)
+    -- Wait for the character's humanoid to load
+    local humanoid = character:WaitForChild("Humanoid", 10)
+    if humanoid then
+        createF3XTool(toolInfo)
+    end
+end
+
+-- Connect to CharacterAdded event
+local player = game.Players.LocalPlayer
+player.CharacterAdded:Connect(onCharacterAdded)
+
+-- Set up the F3X tool for the current character
 if player.Character then
     onCharacterAdded(player.Character)
 end
